@@ -22,6 +22,7 @@ Layer 2   [to do]  [to do]
 - Rows are topological layers. A card depends only on cards above it.
 - Solid arrow = blocks. Dashed arrow = relates to.
 - Yellow card = **Ready**: the ticket is To Do and all its blockers are Done.
+- **blocks N** = the number of not-done tickets further down its chain. Use it to pick which Ready ticket to start first.
 - Hover a card: its parents (orange) and children (purple) light up, through the full chain.
 
 ## Install

@@ -59,6 +59,7 @@ svg{position:absolute;inset:0;pointer-events:none;overflow:visible}
 .card.ready{background:#fff7d6;border-color:#f5cd47;box-shadow:0 0 0 3px #f5cd4755}
 .k{font-weight:700;color:#0c66e4}.st{float:right;font-size:10px;padding:1px 6px;border-radius:3px;background:#dfe1e6}
 .done .st{background:#22a06b;color:#fff}.indeterminate .st{background:#1d7afc;color:#fff}
+.bk{font-size:10px;font-weight:600;color:#ae2e24;background:#ffeceb;border-radius:3px;padding:1px 6px;margin-left:6px}
 .rd{font-size:10px;font-weight:600;color:#7f5f01;background:#f8e6a0;border-radius:3px;padding:1px 6px;margin-left:6px}
 .s{margin:4px 0 6px;line-height:1.3}.m{font-size:11px;color:#5e6c84;line-height:1.5}
 .dim .card{opacity:.25}.dim .card.on{opacity:1}.dim .card.self{outline:2px solid #1d7afc}
@@ -79,7 +80,7 @@ svg{position:absolute;inset:0;pointer-events:none;overflow:visible}
     const root = host.attachShadow({ mode: 'open' });
     root.innerHTML = `<style>${CSS}</style><div class="pane">
 <div class="bar"><h1>${esc(key)}</h1><button id="zo" title="Zoom out">−</button><button id="zr" class="zr" title="Reset to 100%">100%</button><button id="zi" title="Zoom in">+</button><button id="zf">Fit</button><button id="fmt">Auto-format</button><button id="ref">Refresh</button><button id="x" title="Close (Esc)">✕</button></div>
-<div class="sub">Solid arrow = blocks. Dashed = relates to. <span class="rd" style="margin:0">Ready</span> = To Do, all blockers done. Hover: <b style="color:#e2a03f">parents</b> / <b style="color:#8f7ee7">children</b>. Drag a card to move it, drag the canvas to pan, Ctrl/⌘ + scroll or pinch to zoom.</div>
+<div class="sub">Solid arrow = blocks. Dashed = relates to. <span class="rd" style="margin:0">Ready</span> = To Do, all blockers done. <span class="bk" style="margin:0">blocks N</span> = not-done tickets further down the chain. Hover: <b style="color:#e2a03f">parents</b> / <b style="color:#8f7ee7">children</b>. Drag a card to move it, drag the canvas to pan, Ctrl/⌘ + scroll or pinch to zoom.</div>
 <div class="scroll"><div class="msg">Loading…</div></div></div>`;
     document.body.append(host);
     root.getElementById('x').onclick = close;
@@ -123,13 +124,16 @@ svg{position:absolute;inset:0;pointer-events:none;overflow:visible}
       rows[r].sort((x, y) => m[x] - m[y]);
     });
 
+    // not-done tickets anywhere below k in the blocks chain
+    const below = (k, seen = new Set()) => { B.forEach(e => { if (e.from === k && !seen.has(e.to)) { seen.add(e.to); below(e.to, seen); } }); return seen; };
+    const blocks = k => by[k].cat === 'done' ? 0 : [...below(k)].filter(x => by[x].cat !== 'done').length;
     const ready = k => by[k].cat === 'new' && B.filter(e => e.to === k).every(e => by[e.from].cat === 'done');
     const W = 270, GAP = 70, LX = 70, pos = {};
     D.forEach(n => {
       const a = document.createElement('div');
       a.className = `card ${esc(n.cat)}${ready(n.key) ? ' ready' : ''}`;
       a.dataset.k = n.key;
-      a.innerHTML = `<a class="k" target="_blank" href="${location.origin}/browse/${esc(n.key)}">${esc(n.key)}</a>${ready(n.key) ? '<span class="rd">Ready</span>' : ''}<span class="st">${esc(n.status)}</span>
+      a.innerHTML = `<a class="k" target="_blank" href="${location.origin}/browse/${esc(n.key)}">${esc(n.key)}</a>${ready(n.key) ? '<span class="rd">Ready</span>' : ''}${blocks(n.key) ? `<span class="bk" title="Not-done tickets below this one in the blocks chain">blocks ${blocks(n.key)}</span>` : ''}<span class="st">${esc(n.status)}</span>
 <div class="s">${esc(n.summary)}</div><div class="m">👤 ${esc(n.assignee)}<br>🏃 ${esc(n.sprint)}<br>${esc(n.type)} · ${esc(n.priority)} · upd ${esc(n.updated)}</div>`;
       wrap.append(a);
       pos[n.key] = a;
