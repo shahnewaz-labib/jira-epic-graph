@@ -66,6 +66,9 @@ await click();
 await page.locator('.card').first().waitFor();
 await page.waitForTimeout(300);
 assert.deepEqual(await panel(), { cards: 8, ready: ['DEMO-5', 'DEMO-9'] });
+const blocks = await page.evaluate(() => Object.fromEntries([...document.body.lastElementChild.shadowRoot.querySelectorAll('.card')]
+  .map(c => [c.dataset.k, c.querySelector('.bk')?.textContent ?? null])));
+assert.deepEqual(blocks, { 'DEMO-2': null, 'DEMO-3': null, 'DEMO-4': 'blocks 2', 'DEMO-5': 'blocks 3', 'DEMO-6': 'blocks 1', 'DEMO-7': 'blocks 1', 'DEMO-8': null, 'DEMO-9': null });
 
 await page.locator('.card[data-k="DEMO-5"]').hover();
 const chain = await page.evaluate(() => {
