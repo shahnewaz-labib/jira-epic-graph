@@ -58,10 +58,11 @@ svg{position:absolute;inset:0;pointer-events:none;overflow:visible}
 .col-h{position:absolute;font-weight:600;color:#5e6c84;font-size:11px;text-transform:uppercase}
 .card{position:absolute;width:230px;background:#fff;border:1px solid #dfe1e6;border-left:5px solid #8993a4;border-radius:6px;padding:8px 10px;box-shadow:0 1px 2px #0001;cursor:grab;user-select:none;transition:opacity .15s}
 .card.drag{cursor:grabbing;z-index:9;box-shadow:0 6px 16px #0004}
-.card.done{border-left-color:#22a06b}.card.indeterminate{border-left-color:#1d7afc}
+.card.done{border-left-color:#94c748;background:#f4f5f7;color:#8590a2;box-shadow:none}
+.card.done .k{color:#7aa7e8}.card.done .m{color:#a5adba}.card.indeterminate{border-left-color:#1d7afc}
 .card.ready{background:#fff7d6;border-color:#f5cd47;box-shadow:0 0 0 3px #f5cd4755}
 .k{font-weight:700;color:#0c66e4}.st{float:right;font-size:10px;padding:1px 6px;border-radius:3px;background:#dfe1e6}
-.done .st{background:#22a06b;color:#fff}.indeterminate .st{background:#1d7afc;color:#fff}
+.done .st{background:#dcfff1;color:#216e4e}.indeterminate .st{background:#1d7afc;color:#fff}
 .bk{font-size:10px;font-weight:600;color:#ae2e24;background:#ffeceb;border-radius:3px;padding:1px 6px;margin-left:6px}
 .rd{font-size:10px;font-weight:600;color:#7f5f01;background:#f8e6a0;border-radius:3px;padding:1px 6px;margin-left:6px}
 .s{margin:4px 0 6px;line-height:1.3}.m{font-size:11px;color:#5e6c84;line-height:1.5}

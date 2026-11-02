@@ -71,6 +71,12 @@ await click();
 await page.locator('.card').first().waitFor();
 await page.waitForTimeout(300);
 assert.deepEqual(await panel(), { cards: 8, ready: ['DEMO-5', 'DEMO-9'] });
+// Done cards are greyed with solid colours, not opacity, so arrows do not show through.
+const look = await page.evaluate(() => Object.fromEntries(['DEMO-2', 'DEMO-6'].map(k => {
+  const cs = getComputedStyle(document.body.lastElementChild.shadowRoot.querySelector(`.card[data-k="${k}"]`));
+  return [k, [cs.backgroundColor, cs.opacity]];
+})));
+assert.deepEqual(look, { 'DEMO-2': ['rgb(244, 245, 247)', '1'], 'DEMO-6': ['rgb(255, 255, 255)', '1'] });
 const blocks = await page.evaluate(() => Object.fromEntries([...document.body.lastElementChild.shadowRoot.querySelectorAll('.card')]
   .map(c => [c.dataset.k, c.querySelector('.bk')?.textContent ?? null])));
 assert.deepEqual(blocks, { 'DEMO-2': null, 'DEMO-3': null, 'DEMO-4': 'blocks 2', 'DEMO-5': 'blocks 3', 'DEMO-6': 'blocks 1', 'DEMO-7': 'blocks 1', 'DEMO-8': null, 'DEMO-9': null });
