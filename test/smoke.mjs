@@ -62,6 +62,11 @@ const panel = () => page.evaluate(() => {
   return s && { cards: s.querySelectorAll('.card').length, ready: [...s.querySelectorAll('.card.ready')].map(c => c.dataset.k).sort() };
 });
 
+// A stale global from an older injected copy must not hijack the click.
+await sw.evaluate(async () => {
+  const [tab] = await chrome.tabs.query({ active: true });
+  await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: () => { window.__epicGraph = () => {}; } });
+});
 await click();
 await page.locator('.card').first().waitFor();
 await page.waitForTimeout(300);

@@ -1,7 +1,10 @@
-// Injected by background.js when the toolbar icon is clicked. Re-injection only toggles the panel.
+// Injected by background.js on every toolbar click. A click closes an open panel, else opens one.
+// No state is kept on window, so a reloaded extension never runs an old copy.
 (() => {
   'use strict';
-  if (window.__epicGraph) return window.__epicGraph();
+  const SEL = '[data-epic-graph]';
+  const existing = document.querySelector(SEL);
+  if (existing) return existing.remove();
   const API = location.origin + '/rest/api/3';
   const get = async p => {
     const r = await fetch(API + p, { credentials: 'same-origin', headers: { Accept: 'application/json' } });
@@ -67,8 +70,11 @@ svg{position:absolute;inset:0;pointer-events:none;overflow:visible}
 .dim path{opacity:.1}.dim path.on{opacity:1;stroke-width:2.5}`;
 
   let host;
-  const close = () => { host?.remove(); host = null; };
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && host) close(); });
+  const close = () => { document.querySelector(SEL)?.remove(); host = null; };
+  if (!window.__epicGraphEsc) {
+    window.__epicGraphEsc = true;
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelector(SEL)?.remove(); });
+  }
 
   async function open() {
     const key = epicKey();
@@ -76,6 +82,7 @@ svg{position:absolute;inset:0;pointer-events:none;overflow:visible}
     if (!key) return alert('Epic graph: open an epic ticket first.');
     close();
     host = document.createElement('div');
+    host.dataset.epicGraph = '';
     host.style.cssText = 'position:fixed;top:0;right:0;bottom:0;width:min(1200px,75vw);z-index:2147483000;box-shadow:-4px 0 16px #0003';
     const root = host.attachShadow({ mode: 'open' });
     root.innerHTML = `<style>${CSS}</style><div class="pane">
@@ -269,6 +276,5 @@ svg{position:absolute;inset:0;pointer-events:none;overflow:visible}
     requestAnimationFrame(() => { layout(); fitView(); });
   }
 
-  window.__epicGraph = () => (host ? close() : open());
-  window.__epicGraph();
+  open();
 })();
