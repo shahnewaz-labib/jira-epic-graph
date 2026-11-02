@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Jira Epic Graph",
+  "version": "1.0",
+  "description": "Side panel with the dependency graph of the open epic's child tickets. Uses Jira's own API with your session. No data leaves the browser.",
+  "permissions": ["scripting"],
+  "host_permissions": ["https://*.atlassian.net/*"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_title": "Epic graph" }
+}
